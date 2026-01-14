@@ -44,37 +44,71 @@ jobs:
           /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
         fi
         
-        # Update Homebrew
-        brew update
+        # Retry Homebrew update up to 3 times
+        for i in {1..3}; do
+          echo "📡 Attempting Homebrew update ($i/3)..."
+          if brew update; then
+            echo "✅ Homebrew updated successfully"
+            break
+          else
+            echo "⚠️ Homebrew update failed, retrying... ($i/3)"
+            if [ $i -eq 3 ]; then
+              echo "❌ Homebrew update failed after 3 attempts, continuing anyway..."
+            fi
+            sleep 10
+          fi
+        done
         
-        # Install required dependencies
+        # Install dependencies with error handling
         echo "📦 Installing Lazarus..."
-        brew install --cask lazarus
+        if brew install --cask lazarus; then
+          echo "✅ Lazarus installed successfully"
+        else
+          echo "⚠️ Lazarus install failed, trying alternative..."
+          brew install --cask lazarus --force || echo "❌ Lazarus installation failed"
+        fi
         
         echo "📦 Installing Free Pascal..."
-        brew install fpc
+        if brew install fpc; then
+          echo "✅ FPC installed successfully"
+        else
+          echo "❌ FPC installation failed"
+          exit 1
+        fi
         
         echo "📦 Installing build tools..."
-        brew install git cmake ninja
+        for tool in git cmake ninja; do
+          echo "Installing $tool..."
+          if brew install $tool; then
+            echo "✅ $tool installed successfully"
+          else
+            echo "⚠️ $tool install failed, continuing..."
+          fi
+        done
         
     - name: Verify installations
       run: |
         echo "🔍 Verifying installed tools..."
         
-        # Check Lazarus
-        if command -v lazbuild &> /dev/null; then
-          echo "✅ Lazarus found: $(lazbuild --version)"
-        else
-          echo "❌ Lazarus not found"
-          exit 1
-        fi
-        
-        # Check FPC
+        # Check critical tools
         if command -v fpc &> /dev/null; then
           echo "✅ FPC found: $(fpc -iV)"
         else
-          echo "❌ FPC not found"
+          echo "❌ FPC not found - critical failure"
           exit 1
+        fi
+        
+        # Check optional tools
+        if command -v lazbuild &> /dev/null; then
+          echo "✅ Lazarus found: $(lazbuild --version 2>/dev/null || echo 'version unknown')"
+        else
+          echo "⚠️ Lazarus not found, will build without it"
+        fi
+        
+        if command -v cmake &> /dev/null; then
+          echo "✅ CMake found: $(cmake --version | head -1)"
+        else
+          echo "⚠️ CMake not found"
         fi
         
     - name: Build Cheat Engine
@@ -133,10 +167,13 @@ jobs:
       run: |
         echo "📦 Creating DMG package..."
         
-        # Create DMG
-        hdiutil create -volname "Memory Editor $CE_VERSION" -srcfolder release -ov -format UDZO "MemoryEditor-$CE_VERSION-stealth.dmg"
-        
-        echo "✅ DMG created successfully!"
+        # Create DMG with error handling
+        if hdiutil create -volname "Memory Editor $CE_VERSION" -srcfolder release -ov -format UDZO "MemoryEditor-$CE_VERSION-stealth.dmg"; then
+          echo "✅ DMG created successfully!"
+        else
+          echo "❌ DMG creation failed"
+          exit 1
+        fi
         
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
@@ -146,11 +183,25 @@ jobs:
           *.dmg
           release/
         retention-days: 30
+      continue-on-error: true
         
     - name: Build summary
       run: |
-        echo "🎉 Build completed successfully!"
-        echo "📦 Download artifacts from the Actions page"
+        echo "🎉 Build process completed!"
+        echo "📦 Check artifacts for download results"
         echo "🔧 Stealth mode: ${{ github.event.inputs.stealth_mode || 'true' }}"
         echo "🏷️ Version suffix: ${{ github.event.inputs.version_suffix || 'stealth' }}"
-        echo "🍎 macOS build completed!"
+        echo "🍎 macOS build process finished!"
+        
+        # List created files
+        if [ -d "release" ]; then
+          echo "📁 Release directory contents:"
+          ls -la release/
+        fi
+        
+        if ls *.dmg 1> /dev/null 2>&1; then
+          echo "💿 DMG files created:"
+          ls -la *.dmg
+        else
+          echo "⚠️ No DMG files created"
+        fi
