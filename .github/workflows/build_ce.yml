@@ -264,18 +264,24 @@ jobs:
       run: |
         echo "💿 Creating DMG package..."
         
+        # List what we have
+        echo "📂 Contents of release directory:"
+        ls -laR release/
+        
         # Create DMG
-        hdiutil create -volname "Memory Editor $CE_VERSION" \
+        if hdiutil create -volname "Memory Editor $CE_VERSION" \
           -srcfolder release \
           -ov -format UDZO \
-          "MemoryEditor-$CE_VERSION-stealth-mac.dmg"
-        
-        if [ -f "MemoryEditor-$CE_VERSION-stealth-mac.dmg" ]; then
+          "MemoryEditor-$CE_VERSION-stealth-mac.dmg"; then
           echo "✅ DMG created successfully"
           ls -lh "MemoryEditor-$CE_VERSION-stealth-mac.dmg"
         else
-          echo "❌ DMG creation failed"
-          exit 1
+          echo "⚠️ DMG creation failed, creating ZIP archive instead..."
+          cd release
+          zip -r "../MemoryEditor-$CE_VERSION-stealth-mac.zip" .
+          cd ..
+          echo "✅ ZIP created successfully"
+          ls -lh "MemoryEditor-$CE_VERSION-stealth-mac.zip"
         fi
     
     - name: Create release notes
@@ -347,15 +353,31 @@ jobs:
         
         echo "✅ Release notes created"
     
+    - name: List all files before upload
+      run: |
+        echo "📂 Listing all files in workspace:"
+        ls -lah
+        echo ""
+        echo "📂 Checking for DMG/ZIP files:"
+        ls -lh *.dmg *.zip 2>/dev/null || echo "No DMG/ZIP files found"
+        echo ""
+        echo "📂 Checking RELEASE_NOTES.md:"
+        ls -lh RELEASE_NOTES.md 2>/dev/null || echo "RELEASE_NOTES.md not found"
+        echo ""
+        echo "📂 Contents of release directory:"
+        ls -laR release/ 2>/dev/null || echo "release directory not found"
+    
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
         name: memory-editor-mac-stealth-${{ github.run_number }}
         path: |
           *.dmg
+          *.zip
           RELEASE_NOTES.md
           release/
         retention-days: 90
+        if-no-files-found: warn
     
     - name: Create GitHub Release
       if: startsWith(github.ref, 'refs/tags/')
@@ -393,3 +415,4 @@ jobs:
         echo ""
         echo "🚀 Download from the Actions page or Releases"
         echo "📚 See RELEASE_NOTES.md for usage instructions"
+
