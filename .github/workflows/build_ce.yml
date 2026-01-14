@@ -139,11 +139,9 @@ jobs:
           echo "⚠️ Build failed, creating fallback executable"
           # Create fallback
           mkdir -p ../bin
-          cat > ../bin/cheatengine << 'EOFSCRIPT'
-#!/bin/bash
-echo "Cheat Engine $CE_VERSION - Stealth Mode"
-echo "Build completed via GitHub Actions"
-EOFSCRIPT
+          echo '#!/bin/bash' > ../bin/cheatengine
+          echo 'echo "Cheat Engine $CE_VERSION - Stealth Mode"' >> ../bin/cheatengine
+          echo 'echo "Build completed via GitHub Actions"' >> ../bin/cheatengine
           chmod +x ../bin/cheatengine
         fi
     
@@ -163,25 +161,25 @@ EOFSCRIPT
         else
           # Create placeholder
           CE_EXEC="release/Memory Editor.app/Contents/MacOS/cheatengine"
-          cat > "$CE_EXEC" << 'EOFPLACEHOLDER'
-#!/bin/bash
-echo "🎮 Memory Editor $CE_VERSION - Stealth Mode"
-echo "🛡️ Anti-detection features enabled"
-echo ""
-echo "Build Information:"
-echo "- Version: $CE_VERSION"
-echo "- Platform: macOS ($(uname -m))"
-echo "- Build Date: $(date)"
-echo "- Stealth Mode: Enabled"
-echo ""
-echo "Features:"
-echo "✅ Process name obfuscation"
-echo "✅ Window title masking"
-echo "✅ Memory scanning"
-echo "✅ Android device support (via ceserver)"
-echo ""
-echo "Ready for use!"
-EOFPLACEHOLDER
+          {
+            echo '#!/bin/bash'
+            echo 'echo "🎮 Memory Editor $CE_VERSION - Stealth Mode"'
+            echo 'echo "🛡️ Anti-detection features enabled"'
+            echo 'echo ""'
+            echo 'echo "Build Information:"'
+            echo 'echo "- Version: $CE_VERSION"'
+            echo 'echo "- Platform: macOS ($(uname -m))"'
+            echo 'echo "- Build Date: $(date)"'
+            echo 'echo "- Stealth Mode: Enabled"'
+            echo 'echo ""'
+            echo 'echo "Features:"'
+            echo 'echo "✅ Process name obfuscation"'
+            echo 'echo "✅ Window title masking"'
+            echo 'echo "✅ Memory scanning"'
+            echo 'echo "✅ Android device support (via ceserver)"'
+            echo 'echo ""'
+            echo 'echo "Ready for use!"'
+          } > "$CE_EXEC"
           chmod +x "$CE_EXEC"
         fi
         
@@ -190,34 +188,34 @@ EOFPLACEHOLDER
         chmod +x "release/Memory Editor.app/Contents/MacOS/cheatengine"
         
         # Create Info.plist
-        cat > "release/Memory Editor.app/Contents/Info.plist" << 'EOFPLIST'
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>CFBundleExecutable</key>
-    <string>cheatengine</string>
-    <key>CFBundleName</key>
-    <string>Memory Editor</string>
-    <key>CFBundleDisplayName</key>
-    <string>Memory Editor</string>
-    <key>CFBundleVersion</key>
-    <string>$CE_VERSION</string>
-    <key>CFBundleShortVersionString</key>
-    <string>$CE_VERSION</string>
-    <key>CFBundleIdentifier</key>
-    <string>com.memoryeditor.app</string>
-    <key>CFBundlePackageType</key>
-    <string>APPL</string>
-    <key>LSMinimumSystemVersion</key>
-    <string>10.15</string>
-    <key>NSHighResolutionCapable</key>
-    <true/>
-    <key>LSUIElement</key>
-    <false/>
-</dict>
-</plist>
-EOFPLIST
+        {
+          echo '<?xml version="1.0" encoding="UTF-8"?>'
+          echo '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">'
+          echo '<plist version="1.0">'
+          echo '<dict>'
+          echo '    <key>CFBundleExecutable</key>'
+          echo '    <string>cheatengine</string>'
+          echo '    <key>CFBundleName</key>'
+          echo '    <string>Memory Editor</string>'
+          echo '    <key>CFBundleDisplayName</key>'
+          echo '    <string>Memory Editor</string>'
+          echo '    <key>CFBundleVersion</key>'
+          echo '    <string>$CE_VERSION</string>'
+          echo '    <key>CFBundleShortVersionString</key>'
+          echo '    <string>$CE_VERSION</string>'
+          echo '    <key>CFBundleIdentifier</key>'
+          echo '    <string>com.memoryeditor.app</string>'
+          echo '    <key>CFBundlePackageType</key>'
+          echo '    <string>APPL</string>'
+          echo '    <key>LSMinimumSystemVersion</key>'
+          echo '    <string>10.15</string>'
+          echo '    <key>NSHighResolutionCapable</key>'
+          echo '    <true/>'
+          echo '    <key>LSUIElement</key>'
+          echo '    <false/>'
+          echo '</dict>'
+          echo '</plist>'
+        } > "release/Memory Editor.app/Contents/Info.plist"
         
         echo "✅ App bundle created"
     
@@ -237,23 +235,23 @@ EOFPLIST
         fi
         
         # Create README
-        cat > release/android-tools/README.txt << 'EOFREADME'
-Android Tools for Memory Editor
-
-This package includes:
-- deploy-android.sh: Deploy ceserver and Frida to Android device
-- start-mac.sh: Start services and connect to Android
-- frida_scripts/: Anti-detection scripts for Android
-
-Usage:
-1. Connect your Android device (rooted)
-2. Run: ./deploy-android.sh
-3. Run: ./start-mac.sh
-4. Open Memory Editor.app
-5. Connect to localhost:52734
-
-For more information, see the documentation.
-EOFREADME
+        {
+          echo 'Android Tools for Memory Editor'
+          echo ''
+          echo 'This package includes:'
+          echo '- deploy-android.sh: Deploy ceserver and Frida to Android device'
+          echo '- start-mac.sh: Start services and connect to Android'
+          echo '- frida_scripts/: Anti-detection scripts for Android'
+          echo ''
+          echo 'Usage:'
+          echo '1. Connect your Android device (rooted)'
+          echo '2. Run: ./deploy-android.sh'
+          echo '3. Run: ./start-mac.sh'
+          echo '4. Open Memory Editor.app'
+          echo '5. Connect to localhost:52734'
+          echo ''
+          echo 'For more information, see the documentation.'
+        } > release/android-tools/README.txt
         
         echo "✅ Android tools packaged"
     
@@ -277,7 +275,7 @@ EOFREADME
     
     - name: Create release notes
       run: |
-        cat > RELEASE_NOTES.md << 'EOFNOTES'
+        cat > RELEASE_NOTES.md <<'EOF'
 # Memory Editor $CE_VERSION - Stealth Edition
 
 ## 🎯 Features
@@ -340,7 +338,7 @@ https://github.com/${{ github.repository }}
 ---
 
 **Built with ❤️ using GitHub Actions**
-EOFNOTES
+EOF
         
         echo "✅ Release notes created"
     
