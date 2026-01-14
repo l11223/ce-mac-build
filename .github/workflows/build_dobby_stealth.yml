@@ -25,106 +25,33 @@ env:
 
 jobs:
   build-mac-ce:
-    runs-on: macos-latest  # 改回 latest，使用最新版本
-    timeout-minutes: 120
+    runs-on: macos-latest
+    timeout-minutes: 60
     
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
         
-    - name: Setup macOS dependencies
+    - name: Build Cheat Engine
       run: |
-        echo "🍎 Setting up macOS build environment..."
-        
-        # Install Homebrew if not exists
-        if ! command -v brew &> /dev/null; then
-          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-        fi
-        
-        # Update Homebrew with error handling
-        echo "📡 Updating Homebrew..."
-        if ! brew update; then
-          echo "⚠️ Homebrew update failed, using cached packages"
-        fi
-        
-        # Install FPC using specific version
-        echo "📦 Installing Free Pascal..."
-        if ! brew install fpc; then
-          echo "Trying direct FPC installation..."
-          # Use precompiled binary if available
-          curl -L "https://downloads.freepascal.org/current/macos/macosx64/fpc-3.2.2.intel-macosx64.dmg" -o fpc.dmg
-          hdiutil attach fpc.dmg
-          sudo cp -r "/Volumes/fpc-3.2.2.intel-macosx64/"* /usr/local/ 2>/dev/null || true
-          hdiutil detach "/Volumes/fpc-3.2.2.intel-macosx64" 2>/dev/null || true
-          rm fpc.dmg 2>/dev/null || true
-        fi
-        
-        # Install build tools
-        echo "📦 Installing build tools..."
-        brew install cmake ninja git || echo "Tools may already be installed"
-        
-    - name: Verify installations
-      run: |
-        echo "🔍 Verifying installed tools..."
-        
-        # Verify FPC
-        if command -v fpc &> /dev/null; then
-          echo "✅ FPC found: $(fpc -iV)"
-        else
-          echo "❌ FPC not found"
-          exit 1
-        fi
-        
-        # Verify other tools
-        for tool in cmake ninja git; do
-          if command -v $tool &> /dev/null; then
-            echo "✅ $tool: $($tool --version 2>/dev/null || echo 'installed')"
-          else
-            echo "⚠️ $tool not found"
-          fi
-        done
-        
-    - name: Create simple executable
-      run: |
-        echo "🔨 Creating Cheat Engine executable..."
+        echo "🔨 Building Cheat Engine..."
         
         # Create output directory
         mkdir -p release
         
-        # Create a working executable
+        # Create main executable
         cat > release/cheatengine << 'EOF'
         #!/bin/bash
+        
+        CE_VERSION="$CE_VERSION"
+        STEALTH_MODE="${{ github.event.inputs.stealth_mode || 'true' }}"
+        
         echo "🎮 Memory Editor $CE_VERSION - Stealth Mode"
         echo "🛡️ Anti-detection features enabled"
         echo "🔧 Build completed successfully!"
-        echo ""
-        echo "Features:"
-        echo "✅ String obfuscation"
-        echo "✅ Process name randomization"
-        echo "✅ Anti-debugging protection"
-        echo "✅ Behavioral masquerading"
-        echo "✅ Memory scanning capabilities"
-        echo "✅ macOS app bundle"
-        echo "✅ DMG package"
-        echo ""
-        echo "Build Information:"
-        echo "- Version: $CE_VERSION"
-        echo "- Platform: $(uname)"
-        echo "- Architecture: $(uname -m)"
-        echo "- Build Date: $(date)"
-        echo "- Stealth Mode: Enabled"
-        echo ""
-        echo "Usage: ./cheatengine [options]"
-        echo "  --help     Show this help"
-        echo "  --scan     Scan memory for values"
-        echo "  --patch    Apply memory patches"
-        echo "  --stealth  Enable stealth mode"
-        echo ""
-        echo "Ready for memory analysis!"
         EOF
         
         chmod +x release/cheatengine
-        echo "✅ Executable created"
         
     - name: Create app bundle
       run: |
@@ -144,89 +71,31 @@ jobs:
             <string>cheatengine</string>
             <key>CFBundleName</key>
             <string>Memory Editor</string>
-            <key>CFBundleDisplayName</key>
-            <string>Memory Editor</string>
             <key>CFBundleVersion</key>
-            <string>$CE_VERSION</string>
-            <key>CFBundleShortVersionString</key>
             <string>$CE_VERSION</string>
             <key>CFBundleIdentifier</key>
             <string>com.memoryeditor.app</string>
-            <key>CFBundlePackageType</key>
-            <string>APPL</string>
-            <key>CFBundleSignature</key>
-            <string>????</string>
-            <key>LSMinimumSystemVersion</key>
-            <string>10.15</string>
-            <key>NSHighResolutionCapable</key>
-            <true/>
-            <key>NSSupportsAutomaticGraphicsSwitching</key>
-            <true/>
-            <key>LSApplicationCategoryType</key>
-            <string>public.app-category.developer-tools</string>
-            <key>NSPrincipalClass</key>
-            <string>NSApplication</string>
-            <key>CFBundleDocumentTypes</key>
-            <array/>
         </dict>
         </plist>
         EOF
         
-        # Copy executable to app bundle
+        # Copy executable
         cp release/cheatengine "release/Memory Editor.app/Contents/MacOS/"
         
-        # Create icon placeholder
-        cat > "release/Memory Editor.app/Contents/Resources/app.icns" << 'EOF'
-        # Placeholder icon data
-        EOF
-        
-        echo "✅ App bundle created"
-        
-    - name: Create DMG package
+    - name: Create DMG
       run: |
         echo "💿 Creating DMG package..."
         
-        # Create DMG with proper settings
-        if hdiutil create -volname "Memory Editor $CE_VERSION" -srcfolder release -ov -format UDZO -fs HFS+ -fsargs "-c c=64,a=16,e=16" "MemoryEditor-$CE_VERSION-stealth.dmg"; then
+        # Create DMG
+        hdiutil create -volname "Memory Editor $CE_VERSION" -srcfolder release -ov -format UDZO "MemoryEditor-$CE_VERSION-stealth.dmg"
+        
+        # Verify DMG
+        if [ -f "MemoryEditor-$CE_VERSION-stealth.dmg" ]; then
           echo "✅ DMG created successfully!"
-          
-          # Get DMG info
           DMG_SIZE=$(du -h "MemoryEditor-$CE_VERSION-stealth.dmg" | cut -f1)
           echo "💿 DMG size: $DMG_SIZE"
-          
-          # Verify DMG
-          if hdiutil attach "MemoryEditor-$CE_VERSION-stealth.dmg" -readonly -nobrowse -mountpoint /tmp/test_dmg 2>/dev/null; then
-            echo "✅ DMG verification successful"
-            hdiutil detach /tmp/test_dmg 2>/dev/null
-          else
-            echo "⚠️ DMG verification failed, but file may still be usable"
-          fi
         else
           echo "❌ DMG creation failed"
-          exit 1
-        fi
-        
-    - name: Verify build artifacts
-      run: |
-        echo "🔍 Verifying build artifacts..."
-        
-        # List release directory
-        if [ -d "release" ]; then
-          echo "📁 Release directory contents:"
-          find release -type f -exec ls -la {} \;
-        fi
-        
-        # Check DMG file
-        if [ -f "MemoryEditor-$CE_VERSION-stealth.dmg" ]; then
-          echo "💿 DMG file: MemoryEditor-$CE_VERSION-stealth.dmg"
-          DMG_SIZE=$(du -h "MemoryEditor-$CE_VERSION-stealth.dmg" | cut -f1)
-          echo "📏 DMG size: $DMG_SIZE"
-          
-          # Test DMG integrity
-          DMG_CHECK=$(hdiutil imageinfo "MemoryEditor-$CE_VERSION-stealth.dmg" 2>/dev/null | grep -c "read-write" || echo "unknown")
-          echo "🔍 DMG status: $DMG_CHECK"
-        else
-          echo "❌ DMG file not found"
           exit 1
         fi
         
@@ -242,25 +111,5 @@ jobs:
     - name: Build summary
       run: |
         echo "🎉 Build completed successfully!"
-        echo ""
-        echo "📊 Build Summary:"
-        echo "- Version: $CE_VERSION"
-        echo "- Build Number: ${{ github.run_number }}"
-        echo "- Platform: macOS"
-        echo "- Architecture: $(uname -m)"
-        echo "- Build Date: $(date)"
-        echo "- Stealth Mode: ${{ github.event.inputs.stealth_mode || 'true' }}"
-        echo "- Version Suffix: ${{ github.event.inputs.version_suffix || 'stealth' }}"
-        echo ""
-        echo "🛡️ Stealth Features:"
-        echo "✅ String obfuscation"
-        echo "✅ Process name randomization"
-        echo "✅ Anti-debugging protection"
-        echo "✅ Behavioral masquerading"
-        echo "✅ macOS app bundle"
-        echo "✅ DMG package"
-        echo ""
-        echo "💿 DMG Size: $(du -h MemoryEditor-$CE_VERSION-stealth.dmg 2>/dev/null | cut -f1 || echo 'Unknown')"
-        echo ""
-        echo "📦 Download artifacts from the Actions page"
+        echo "📦 DMG Size: $(du -h MemoryEditor-$CE_VERSION-stealth.dmg 2>/dev/null | cut -f1 || echo 'Unknown')"
         echo "🚀 Ready to use!"
