@@ -119,11 +119,11 @@ jobs:
         # 4. Add stealth compilation flags
         echo "  [4/4] Adding stealth flags..."
         cat > stealth.cfg << 'EOFCONFIG'
-        # Stealth build configuration
-        -g-
-        -O3
-        -Xs
-        EOFCONFIG
+# Stealth build configuration
+-g-
+-O3
+-Xs
+EOFCONFIG
         echo "    ✅ Stealth flags added"
         
         echo "✅ All patches applied successfully"
@@ -143,10 +143,10 @@ jobs:
           # Create fallback
           mkdir -p ../bin
           cat > ../bin/cheatengine << 'EOFSCRIPT'
-          #!/bin/bash
-          echo "Cheat Engine $CE_VERSION - Stealth Mode"
-          echo "Build completed via GitHub Actions"
-          EOFSCRIPT
+#!/bin/bash
+echo "Cheat Engine $CE_VERSION - Stealth Mode"
+echo "Build completed via GitHub Actions"
+EOFSCRIPT
           chmod +x ../bin/cheatengine
         fi
     
@@ -167,24 +167,24 @@ jobs:
           # Create placeholder
           CE_EXEC="release/Memory Editor.app/Contents/MacOS/cheatengine"
           cat > "$CE_EXEC" << 'EOFPLACEHOLDER'
-          #!/bin/bash
-          echo "🎮 Memory Editor $CE_VERSION - Stealth Mode"
-          echo "🛡️ Anti-detection features enabled"
-          echo ""
-          echo "Build Information:"
-          echo "- Version: $CE_VERSION"
-          echo "- Platform: macOS ($(uname -m))"
-          echo "- Build Date: $(date)"
-          echo "- Stealth Mode: Enabled"
-          echo ""
-          echo "Features:"
-          echo "✅ Process name obfuscation"
-          echo "✅ Window title masking"
-          echo "✅ Memory scanning"
-          echo "✅ Android device support (via ceserver)"
-          echo ""
-          echo "Ready for use!"
-          EOFPLACEHOLDER
+#!/bin/bash
+echo "🎮 Memory Editor $CE_VERSION - Stealth Mode"
+echo "🛡️ Anti-detection features enabled"
+echo ""
+echo "Build Information:"
+echo "- Version: $CE_VERSION"
+echo "- Platform: macOS ($(uname -m))"
+echo "- Build Date: $(date)"
+echo "- Stealth Mode: Enabled"
+echo ""
+echo "Features:"
+echo "✅ Process name obfuscation"
+echo "✅ Window title masking"
+echo "✅ Memory scanning"
+echo "✅ Android device support (via ceserver)"
+echo ""
+echo "Ready for use!"
+EOFPLACEHOLDER
           chmod +x "$CE_EXEC"
         fi
         
@@ -194,33 +194,33 @@ jobs:
         
         # Create Info.plist
         cat > "release/Memory Editor.app/Contents/Info.plist" << 'EOFPLIST'
-        <?xml version="1.0" encoding="UTF-8"?>
-        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-        <plist version="1.0">
-        <dict>
-            <key>CFBundleExecutable</key>
-            <string>cheatengine</string>
-            <key>CFBundleName</key>
-            <string>Memory Editor</string>
-            <key>CFBundleDisplayName</key>
-            <string>Memory Editor</string>
-            <key>CFBundleVersion</key>
-            <string>$CE_VERSION</string>
-            <key>CFBundleShortVersionString</key>
-            <string>$CE_VERSION</string>
-            <key>CFBundleIdentifier</key>
-            <string>com.memoryeditor.app</string>
-            <key>CFBundlePackageType</key>
-            <string>APPL</string>
-            <key>LSMinimumSystemVersion</key>
-            <string>10.15</string>
-            <key>NSHighResolutionCapable</key>
-            <true/>
-            <key>LSUIElement</key>
-            <false/>
-        </dict>
-        </plist>
-        EOFPLIST
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleExecutable</key>
+    <string>cheatengine</string>
+    <key>CFBundleName</key>
+    <string>Memory Editor</string>
+    <key>CFBundleDisplayName</key>
+    <string>Memory Editor</string>
+    <key>CFBundleVersion</key>
+    <string>$CE_VERSION</string>
+    <key>CFBundleShortVersionString</key>
+    <string>$CE_VERSION</string>
+    <key>CFBundleIdentifier</key>
+    <string>com.memoryeditor.app</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>10.15</string>
+    <key>NSHighResolutionCapable</key>
+    <true/>
+    <key>LSUIElement</key>
+    <false/>
+</dict>
+</plist>
+EOFPLIST
         
         echo "✅ App bundle created"
     
@@ -241,22 +241,22 @@ jobs:
         
         # Create README
         cat > release/android-tools/README.txt << 'EOFREADME'
-        Android Tools for Memory Editor
-        
-        This package includes:
-        - deploy-android.sh: Deploy ceserver and Frida to Android device
-        - start-mac.sh: Start services and connect to Android
-        - frida_scripts/: Anti-detection scripts for Android
-        
-        Usage:
-        1. Connect your Android device (rooted)
-        2. Run: ./deploy-android.sh
-        3. Run: ./start-mac.sh
-        4. Open Memory Editor.app
-        5. Connect to localhost:52734
-        
-        For more information, see the documentation.
-        EOFREADME
+Android Tools for Memory Editor
+
+This package includes:
+- deploy-android.sh: Deploy ceserver and Frida to Android device
+- start-mac.sh: Start services and connect to Android
+- frida_scripts/: Anti-detection scripts for Android
+
+Usage:
+1. Connect your Android device (rooted)
+2. Run: ./deploy-android.sh
+3. Run: ./start-mac.sh
+4. Open Memory Editor.app
+5. Connect to localhost:52734
+
+For more information, see the documentation.
+EOFREADME
         
         echo "✅ Android tools packaged"
     
@@ -281,69 +281,69 @@ jobs:
     - name: Create release notes
       run: |
         cat > RELEASE_NOTES.md << 'EOFNOTES'
-        # Memory Editor $CE_VERSION - Stealth Edition
-        
-        ## 🎯 Features
-        
-        ### Mac Edition
-        - ✅ Process name obfuscation (com.apple.systemuiserver)
-        - ✅ Window title masking (System Monitor)
-        - ✅ Memory scanning and modification
-        - ✅ Stealth compilation flags
-        - ✅ No DBK driver (more stealthy)
-        
-        ### Android Support
-        - ✅ Connect to Android devices via ceserver
-        - ✅ USB and WiFi connection support
-        - ✅ Frida anti-detection scripts included
-        - ✅ Root hiding capabilities
-        - ✅ Automated deployment scripts
-        
-        ## 📦 Package Contents
-        
-        - Memory Editor.app - Main application
-        - android-tools/ - Android deployment tools
-          - deploy-android.sh - Deploy to Android
-          - start-mac.sh - Start services
-          - frida_scripts/ - Anti-detection scripts
-        
-        ## 🚀 Quick Start
-        
-        ### For Mac Only
-        1. Open Memory Editor.app
-        2. Start scanning memory
-        
-        ### For Mac + Android
-        1. Connect Android device (rooted)
-        2. Run: cd android-tools && ./deploy-android.sh
-        3. Run: ./start-mac.sh
-        4. Open Memory Editor.app
-        5. Connect to localhost:52734
-        
-        ## ⚠️ Important Notes
-        
-        - **For educational purposes only**
-        - **Use at your own risk**
-        - **Do not use in online games**
-        - **Respect game developers**
-        
-        ## 🔧 Build Information
-        
-        - Version: $CE_VERSION
-        - Build Date: $(date)
-        - Platform: macOS
-        - Stealth Mode: Enabled
-        - GitHub Actions: Build #${{ github.run_number }}
-        
-        ## 📚 Documentation
-        
-        For detailed documentation, visit:
-        https://github.com/${{ github.repository }}
-        
-        ---
-        
-        **Built with ❤️ using GitHub Actions**
-        EOFNOTES
+# Memory Editor $CE_VERSION - Stealth Edition
+
+## 🎯 Features
+
+### Mac Edition
+- ✅ Process name obfuscation (com.apple.systemuiserver)
+- ✅ Window title masking (System Monitor)
+- ✅ Memory scanning and modification
+- ✅ Stealth compilation flags
+- ✅ No DBK driver (more stealthy)
+
+### Android Support
+- ✅ Connect to Android devices via ceserver
+- ✅ USB and WiFi connection support
+- ✅ Frida anti-detection scripts included
+- ✅ Root hiding capabilities
+- ✅ Automated deployment scripts
+
+## 📦 Package Contents
+
+- Memory Editor.app - Main application
+- android-tools/ - Android deployment tools
+  - deploy-android.sh - Deploy to Android
+  - start-mac.sh - Start services
+  - frida_scripts/ - Anti-detection scripts
+
+## 🚀 Quick Start
+
+### For Mac Only
+1. Open Memory Editor.app
+2. Start scanning memory
+
+### For Mac + Android
+1. Connect Android device (rooted)
+2. Run: cd android-tools && ./deploy-android.sh
+3. Run: ./start-mac.sh
+4. Open Memory Editor.app
+5. Connect to localhost:52734
+
+## ⚠️ Important Notes
+
+- **For educational purposes only**
+- **Use at your own risk**
+- **Do not use in online games**
+- **Respect game developers**
+
+## 🔧 Build Information
+
+- Version: $CE_VERSION
+- Build Date: $(date)
+- Platform: macOS
+- Stealth Mode: Enabled
+- GitHub Actions: Build #${{ github.run_number }}
+
+## 📚 Documentation
+
+For detailed documentation, visit:
+https://github.com/${{ github.repository }}
+
+---
+
+**Built with ❤️ using GitHub Actions**
+EOFNOTES
         
         echo "✅ Release notes created"
     
