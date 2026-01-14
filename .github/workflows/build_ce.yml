@@ -275,70 +275,70 @@ jobs:
     
     - name: Create release notes
       run: |
-        cat > RELEASE_NOTES.md <<'EOF'
-# Memory Editor $CE_VERSION - Stealth Edition
-
-## 🎯 Features
-
-### Mac Edition
-- ✅ Process name obfuscation (com.apple.systemuiserver)
-- ✅ Window title masking (System Monitor)
-- ✅ Memory scanning and modification
-- ✅ Stealth compilation flags
-- ✅ No DBK driver (more stealthy)
-
-### Android Support
-- ✅ Connect to Android devices via ceserver
-- ✅ USB and WiFi connection support
-- ✅ Frida anti-detection scripts included
-- ✅ Root hiding capabilities
-- ✅ Automated deployment scripts
-
-## 📦 Package Contents
-
-- Memory Editor.app - Main application
-- android-tools/ - Android deployment tools
-  - deploy-android.sh - Deploy to Android
-  - start-mac.sh - Start services
-  - frida_scripts/ - Anti-detection scripts
-
-## 🚀 Quick Start
-
-### For Mac Only
-1. Open Memory Editor.app
-2. Start scanning memory
-
-### For Mac + Android
-1. Connect Android device (rooted)
-2. Run: cd android-tools && ./deploy-android.sh
-3. Run: ./start-mac.sh
-4. Open Memory Editor.app
-5. Connect to localhost:52734
-
-## ⚠️ Important Notes
-
-- **For educational purposes only**
-- **Use at your own risk**
-- **Do not use in online games**
-- **Respect game developers**
-
-## 🔧 Build Information
-
-- Version: $CE_VERSION
-- Build Date: $(date)
-- Platform: macOS
-- Stealth Mode: Enabled
-- GitHub Actions: Build #${{ github.run_number }}
-
-## 📚 Documentation
-
-For detailed documentation, visit:
-https://github.com/${{ github.repository }}
-
----
-
-**Built with ❤️ using GitHub Actions**
-EOF
+        {
+          echo '# Memory Editor $CE_VERSION - Stealth Edition'
+          echo ''
+          echo '## 🎯 Features'
+          echo ''
+          echo '### Mac Edition'
+          echo '- ✅ Process name obfuscation (com.apple.systemuiserver)'
+          echo '- ✅ Window title masking (System Monitor)'
+          echo '- ✅ Memory scanning and modification'
+          echo '- ✅ Stealth compilation flags'
+          echo '- ✅ No DBK driver (more stealthy)'
+          echo ''
+          echo '### Android Support'
+          echo '- ✅ Connect to Android devices via ceserver'
+          echo '- ✅ USB and WiFi connection support'
+          echo '- ✅ Frida anti-detection scripts included'
+          echo '- ✅ Root hiding capabilities'
+          echo '- ✅ Automated deployment scripts'
+          echo ''
+          echo '## 📦 Package Contents'
+          echo ''
+          echo '- Memory Editor.app - Main application'
+          echo '- android-tools/ - Android deployment tools'
+          echo '  - deploy-android.sh - Deploy to Android'
+          echo '  - start-mac.sh - Start services'
+          echo '  - frida_scripts/ - Anti-detection scripts'
+          echo ''
+          echo '## 🚀 Quick Start'
+          echo ''
+          echo '### For Mac Only'
+          echo '1. Open Memory Editor.app'
+          echo '2. Start scanning memory'
+          echo ''
+          echo '### For Mac + Android'
+          echo '1. Connect Android device (rooted)'
+          echo '2. Run: cd android-tools && ./deploy-android.sh'
+          echo '3. Run: ./start-mac.sh'
+          echo '4. Open Memory Editor.app'
+          echo '5. Connect to localhost:52734'
+          echo ''
+          echo '## ⚠️ Important Notes'
+          echo ''
+          echo '- **For educational purposes only**'
+          echo '- **Use at your own risk**'
+          echo '- **Do not use in online games**'
+          echo '- **Respect game developers**'
+          echo ''
+          echo '## 🔧 Build Information'
+          echo ''
+          echo '- Version: $CE_VERSION'
+          echo '- Build Date: $(date)'
+          echo '- Platform: macOS'
+          echo '- Stealth Mode: Enabled'
+          echo '- GitHub Actions: Build #${{ github.run_number }}'
+          echo ''
+          echo '## 📚 Documentation'
+          echo ''
+          echo 'For detailed documentation, visit:'
+          echo 'https://github.com/${{ github.repository }}'
+          echo ''
+          echo '---'
+          echo ''
+          echo '**Built with ❤️ using GitHub Actions**'
+        } > RELEASE_NOTES.md
         
         echo "✅ Release notes created"
     
