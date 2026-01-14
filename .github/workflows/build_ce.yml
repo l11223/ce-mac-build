@@ -155,12 +155,14 @@ jobs:
         
         # Find CE executable
         if [ -f "ce-source/Cheat Engine/cheatengine" ]; then
-          CE_EXEC="ce-source/Cheat Engine/cheatengine"
+          echo "✅ Found CE executable in ce-source/Cheat Engine/"
+          cp "ce-source/Cheat Engine/cheatengine" "release/Memory Editor.app/Contents/MacOS/cheatengine"
         elif [ -f "ce-source/bin/cheatengine" ]; then
-          CE_EXEC="ce-source/bin/cheatengine"
+          echo "✅ Found CE executable in ce-source/bin/"
+          cp "ce-source/bin/cheatengine" "release/Memory Editor.app/Contents/MacOS/cheatengine"
         else
-          # Create placeholder
-          CE_EXEC="release/Memory Editor.app/Contents/MacOS/cheatengine"
+          echo "⚠️ CE executable not found, creating placeholder..."
+          # Create placeholder directly in target location
           {
             echo '#!/bin/bash'
             echo 'echo "🎮 Memory Editor $CE_VERSION - Stealth Mode"'
@@ -179,12 +181,10 @@ jobs:
             echo 'echo "✅ Android device support (via ceserver)"'
             echo 'echo ""'
             echo 'echo "Ready for use!"'
-          } > "$CE_EXEC"
-          chmod +x "$CE_EXEC"
+          } > "release/Memory Editor.app/Contents/MacOS/cheatengine"
         fi
         
-        # Copy executable
-        cp "$CE_EXEC" "release/Memory Editor.app/Contents/MacOS/cheatengine"
+        # Make executable
         chmod +x "release/Memory Editor.app/Contents/MacOS/cheatengine"
         
         # Create Info.plist
