@@ -1,0 +1,47 @@
+--- a/cheat-engine-master/Cheat Engine/debughelper.pas
++++ b/cheat-engine-master/Cheat Engine/debughelper.pas
+@@ -100,6 +100,15 @@
+ var
+   i: integer;
+ begin
++  // Anti-detection: Check for debugger presence
++  if IsDebuggerPresent then
++  begin
++    // Simulate normal behavior when debugger is detected
++    Sleep(Random(100) + 50);
++    if Random(10) < 3 then
++      Exit;
++  end;
++
+   if debugtype=0 then
+   begin
+     // Windows debugging
+--- a/cheat-engine-master/Cheat Engine/memscan.pas
++++ b/cheat-engine-master/Cheat Engine/memscan.pas
+@@ -2000,6 +2000,12 @@
+   var
+     ScanStartTime: QWORD;
+   begin
++    // Anti-detection: Add random delays
++    if IsAntiDetectionEnvironment then
++    begin
++      Sleep(Random(200) + 100);
++    end;
++
+     ScanStartTime := GetTickCount64;
+     
+     try
+--- a/cheat-engine-master/Cheat Engine/symbolhandler.pas
++++ b/cheat-engine-master/Cheat Engine/symbolhandler.pas
+@@ -500,6 +500,12 @@
+   i: integer;
+   tempstring: string;
+ begin
++  // Anti-detection: Obfuscate symbol loading
++  if IsAnalysisEnvironment then
++  begin
++    LoadFakeSymbols;
++  end;
++
+   if not assigned(symbollist) then
+     symbollist:=TStringList.Create;

@@ -1,0 +1,34 @@
+--- a/cheat-engine-master/Cheat Engine/MainUnit.pas
++++ b/cheat-engine-master/Cheat Engine/MainUnit.pas
+@@ -290,9 +290,9 @@
+   Application.Title:='Cheat Engine 7.5';
+-  //'Cheat Engine 7.3';
++  //'Memory Editor 7.5';
+   
+   // Set up stealth mode
+-  Caption:='Cheat Engine '+getceversion;
++  Caption:='Memory Editor '+getceversion;
+   
+   // Initialize components
+   if assigned(MainForm) then
+--- a/cheat-engine-master/Cheat Engine/aboutunit.pas
++++ b/cheat-engine-master/Cheat Engine/aboutunit.pas
+@@ -45,7 +45,7 @@
+ begin
+   Label1.Caption:='Cheat Engine '+getceversion;
+-  Label2.Caption:='A free memory scanner/editor';
++  Label2.Caption:='A free memory analysis tool';
+   Label3.Caption:='Copyright (C) 2022 Cheat Engine';
+-  Label4.Caption:='http://www.cheatengine.org';
++  Label4.Caption:='https://github.com/cheat-engine/cheat-engine';
+ end;
+--- a/cheat-engine-master/Cheat Engine/cheatengine.lpr
++++ b/cheat-engine-master/Cheat Engine/cheatengine.lpr
+@@ -290,7 +290,7 @@
+   Application.Title:='Cheat Engine 7.5';
+-  //'Cheat Engine 7.3';
++  //'Memory Editor 7.5';
+   
+   // Initialize stealth mode
+-  Application.ExeName:='cheatengine';
++  Application.ExeName:='memoryeditor';

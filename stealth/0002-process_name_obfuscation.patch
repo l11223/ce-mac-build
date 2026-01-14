@@ -1,0 +1,33 @@
+--- a/cheat-engine-master/Cheat Engine/CEFuncProc.pas
++++ b/cheat-engine-master/Cheat Engine/CEFuncProc.pas
+@@ -3977,7 +3977,7 @@
+   if not assigned(OpenProcess) then
+   begin
+     {$ifdef darwin}
+-    OpenProcess:=@macport.OpenProcess;
++    OpenProcess:=@macport.OpenProcessStealth;
+     {$endif}
+     {$ifdef windows}
+     OpenProcess:=@windows.OpenProcess;
+--- a/cheat-engine-master/Cheat Engine/ProcessHandlerUnit.pas
++++ b/cheat-engine-master/Cheat Engine/ProcessHandlerUnit.pas
+@@ -150,7 +150,7 @@
+   Result:=TProcessListEntry.Create;
+   Result.ProcessID:=ProcessID;
+-  Result.ProcessName:='cheatengine';
++  Result.ProcessName:=GetRandomProcessName;
+   Result.ProcessHandle:=OpenProcess(PROCESS_ALL_ACCESS, False, ProcessID);
+ end;
+--- a/cheat-engine-master/Cheat Engine/MainUnit.pas
++++ b/cheat-engine-master/Cheat Engine/MainUnit.pas
+@@ -295,6 +295,11 @@
+   Caption:='Memory Editor '+getceversion;
+   
++  // Set random process name
++  Randomize;
++  Application.Title:=GetRandomProcessName;
++  Application.ExeName:=GetRandomProcessName;
++  
+   // Initialize components
+   if assigned(MainForm) then
+   begin
