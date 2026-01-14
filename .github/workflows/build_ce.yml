@@ -86,7 +86,7 @@ jobs:
         echo "✅ CE source cloned"
     
     - name: Apply stealth patches
-      if: ${{ github.event.inputs.apply_patches != 'false' }}
+      if: github.event.inputs.apply_patches != 'false'
       run: |
         echo "🔧 Applying anti-detection patches..."
         
