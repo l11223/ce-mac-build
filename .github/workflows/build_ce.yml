@@ -118,11 +118,9 @@ jobs:
         
         # 4. Add stealth compilation flags
         echo "  [4/4] Adding stealth flags..."
-        cat > stealth.cfg << EOFCONFIG
--g-
--O3
--Xs
-EOFCONFIG
+        echo "-g-" > stealth.cfg
+        echo "-O3" >> stealth.cfg
+        echo "-Xs" >> stealth.cfg
         echo "    ✅ Stealth flags added"
         
         echo "✅ All patches applied successfully"
