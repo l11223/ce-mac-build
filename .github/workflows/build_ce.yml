@@ -118,8 +118,7 @@ jobs:
         
         # 4. Add stealth compilation flags
         echo "  [4/4] Adding stealth flags..."
-        cat > stealth.cfg << 'EOFCONFIG'
-# Stealth build configuration
+        cat > stealth.cfg << EOFCONFIG
 -g-
 -O3
 -Xs
