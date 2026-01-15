@@ -379,12 +379,39 @@ jobs:
         retention-days: 90
         if-no-files-found: warn
     
-    - name: Create GitHub Release
+    - name: Generate release tag
+      id: tag
+      run: |
+        # Generate tag based on date and build number
+        TAG_NAME="v${{ env.CE_VERSION }}-build-${{ github.run_number }}"
+        echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
+        echo "release_name=Memory Editor ${{ env.CE_VERSION }} (Build ${{ github.run_number }})" >> $GITHUB_OUTPUT
+        echo "📌 Release tag: $TAG_NAME"
+    
+    - name: Create GitHub Release (Auto)
+      if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ steps.tag.outputs.tag_name }}
+        name: ${{ steps.tag.outputs.release_name }}
+        files: |
+          MemoryEditor-${{ env.CE_VERSION }}-stealth-mac.dmg
+          MemoryEditor-${{ env.CE_VERSION }}-stealth-mac.zip
+          RELEASE_NOTES.md
+        body_path: RELEASE_NOTES.md
+        draft: false
+        prerelease: false
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Create GitHub Release (Manual Tag)
       if: startsWith(github.ref, 'refs/tags/')
       uses: softprops/action-gh-release@v1
       with:
         files: |
           MemoryEditor-${{ env.CE_VERSION }}-stealth-mac.dmg
+          MemoryEditor-${{ env.CE_VERSION }}-stealth-mac.zip
           RELEASE_NOTES.md
         body_path: RELEASE_NOTES.md
         draft: false
@@ -401,6 +428,7 @@ jobs:
         echo "Version:        $CE_VERSION"
         echo "Platform:       macOS"
         echo "Build Number:   ${{ github.run_number }}"
+        echo "Release Tag:    ${{ steps.tag.outputs.tag_name }}"
         echo "Stealth Mode:   ${{ github.event.inputs.stealth_mode || 'true' }}"
         echo "Patches:        ${{ github.event.inputs.apply_patches || 'true' }}"
         echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -409,10 +437,19 @@ jobs:
         if [ -f "MemoryEditor-$CE_VERSION-stealth-mac.dmg" ]; then
           echo "  ✅ DMG: $(ls -lh MemoryEditor-$CE_VERSION-stealth-mac.dmg | awk '{print $5}')"
         fi
+        if [ -f "MemoryEditor-$CE_VERSION-stealth-mac.zip" ]; then
+          echo "  ✅ ZIP: $(ls -lh MemoryEditor-$CE_VERSION-stealth-mac.zip | awk '{print $5}')"
+        fi
         echo "  ✅ Release notes: RELEASE_NOTES.md"
         echo "  ✅ App bundle: Memory Editor.app"
         echo "  ✅ Android tools: android-tools/"
         echo ""
-        echo "🚀 Download from the Actions page or Releases"
+        echo "� Direct Download Links:"
+        echo "   GitHub Release: https://github.com/${{ github.repository }}/releases/tag/${{ steps.tag.outputs.tag_name }}"
+        echo ""
+        echo "🚀 Download from:"
+        echo "   1. GitHub Releases page (recommended)"
+        echo "   2. Actions artifacts (temporary)"
+        echo ""
         echo "📚 See RELEASE_NOTES.md for usage instructions"
 
